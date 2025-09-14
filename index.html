@@ -1,525 +1,249 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Relaxing Mahjong Sleep Game — Calm Puzzle for Better Sleep</title>
-<meta name="description" content="Play a relaxing Mahjong-style puzzle designed for adults 30+. Large tiles, calm visuals and gentle mechanics to help unwind before bedtime. Free, browser-playable." />
-<meta name="keywords" content="relaxing game, sleep game, mahjong solitaire, calming puzzle, stress relief game, games for adults, sleep helper" />
-<link rel="author" href="#" />
-<style>
-  :root{
-    --bg:#071226;
-    --card:#0f2b3f;
-    --accent:#e6f7ff;
-    --tile:#f7f5ef;
-    --tile-dark:#e6ded0;
-    --muted:#9fb3c8;
-    --glow: rgba(180,220,255,0.08);
-  }
-  html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial; background: radial-gradient(circle at 10% 10%, rgba(255,255,255,0.02), transparent 15%), var(--bg); color:var(--accent); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
-  .wrap{max-width:980px;margin:24px auto;padding:18px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); box-shadow: 0 6px 30px rgba(2,6,23,0.6); display:grid; grid-template-columns: 1fr 360px; gap:18px;}
-  header{grid-column:1/-1; display:flex;align-items:center;justify-content:space-between; gap:12px}
-  h1{margin:0;font-size:20px}
-  .sub{color:var(--muted);font-size:13px}
-  .game-area{background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); border-radius:12px;padding:12px; display:flex;flex-direction:column; align-items:center; justify-content:center; min-height:520px;}
-  canvas{border-radius:10px; background: linear-gradient(180deg,#031826 0%, #062936 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 8px 30px rgba(0,0,0,0.6);}
-  .panel{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); border-radius:12px;padding:12px; min-height:520px; display:flex;flex-direction:column; gap:12px;}
-  .controls{display:flex;gap:8px;flex-wrap:wrap}
-  button{background:transparent;border:1px solid rgba(255,255,255,0.06); color:var(--accent); padding:10px 12px;border-radius:10px;font-size:14px; cursor:pointer}
-  button.primary{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.08); box-shadow: 0 6px 18px rgba(0,0,0,0.6)}
-  .muted{color:var(--muted);font-size:13px}
-  .meta{font-size:13px;color:var(--muted)}
-  .tile-count{font-weight:700; font-size:14px}
-  .big{font-size:16px}
-  .hintHighlight{box-shadow:0 0 18px rgba(180,220,255,0.4) inset;}
-  .footer{grid-column:1/-1;font-size:13px;color:var(--muted);margin-top:8px;}
-  @media (max-width:920px){
-    .wrap{grid-template-columns:1fr; padding:12px}
-    .panel{min-height:280px}
-    .game-area{min-height:360px}
-  }
-  .infoBox{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02); color:var(--muted)}
-  .link{color:var(--accent); text-decoration:none}
-  .center{text-align:center}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIME Broadband Malaysia - Unbeatable Fibre Internet at RM99/month</title>
+    <meta name="description" content="Get unbeatable TIME Fibre Broadband in Malaysia at RM99/month through our referral. Enjoy fast, reliable internet with exclusive discounts. Connect your home or business today!">
+    <meta name="keywords" content="Malaysia, Broadband, Fast Internet, Discount, TIME Fibre, RM99, Home Broadband, Business Internet, High Speed Internet, Internet Promotion, TIME referral">
+    <meta name="author" content="Your Name/Organisation (Optional)">
+    <meta property="og:title" content="TIME Broadband Malaysia - Unbeatable Fibre Internet at RM99/month">
+    <meta property="og:description" content="Get unbeatable TIME Fibre Broadband in Malaysia at RM99/month through our referral. Enjoy fast, reliable internet with exclusive discounts. Connect your home or business today!">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://huae.time.com.my/?478868011118"> <meta property="og:image" content="https://placehold.co/1200x630/FF16FE/white?text=TIME+Fibre"> <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif; /* Approximating TIME's font with Inter */
+            background-color: #fff; /* White background as per TIME site */
+        }
+        /* Official TIME pink from your details: #FF16FE */
+        .time-official-pink {
+            background-color: #FF16FE;
+        }
+        .text-time-official-pink {
+            color: #FF16FE;
+        }
+        /* Primary button style for "Sign Up Now" */
+        .time-button-primary {
+            background-color: #000; /* Black background */
+            color: #fff; /* White text */
+            padding: 0.75rem 2.5rem; /* Adjusted padding for a wider button */
+            border-radius: 9999px; /* Fully rounded */
+            font-weight: 600; /* Semi-bold */
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+        }
+        .time-button-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Custom styling for the hero section background to mimic the TIME site */
+        .hero-section-bg {
+            background-color: #FF16FE; /* The main pink color from the hero section */
+            border-radius: 1.5rem; /* Rounded corners for the entire section */
+            overflow: hidden; /* Ensure content stays within rounded corners */
+        }
+
+        /* Styling for the notification toast */
+        #notificationToast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: none; /* Initially hidden */
+            z-index: 1000;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+    </style>
 </head>
-<body>
-<div class="wrap" role="main">
-  <header>
-    <div>
-      <h1>Relaxing Mahjong — Sleep Helper</h1>
-      <div class="sub">Large tiles • Calm night theme • For adults 30+ • Helps unwind before bedtime</div>
-    </div>
-    <div style="text-align:right">
-      <div class="muted">Dev: askyline9</div>
-      <div class="muted">Test & share on social media</div>
-    </div>
-  </header>
+<body class="flex flex-col min-h-screen">
+    <header class="bg-white shadow-sm p-4 sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center px-4 md:px-6">
+            <a href="https://time.com.my" target="_blank" rel="noopener noreferrer" class="flex items-center">
+                <img src="./images/timedotcomlogo.JPG"
+                     onerror="this.onerror=null;this.src='https://placehold.co/60x24/000000/white?text=TIME';"
+                     alt="TIME Logo" class="h-6 w-auto">
+            </a>
+            <nav class="hidden md:flex items-center space-x-6 flex-grow justify-center">
+                <a href="https://time.com.my/broadband/residential" target="_blank" rel="noopener noreferrer" class="text-gray-800 hover:text-time-official-pink font-bold transition-colors duration-300">Residential</a>
+                <a href="https://time.com.my/broadband/business" target="_blank" rel="noopener noreferrer" class="text-gray-800 hover:text-time-official-pink font-bold transition-colors duration-300">Business</a>
+                <a href="https://time.com.my/support" target="_blank" rel="noopener noreferrer" class="text-gray-800 hover:text-time-official-pink font-bold transition-colors duration-300">Support</a>
+            </nav>
+            <button id="mobile-menu-button" class="md:hidden p-2 text-gray-800 hover:text-time-official-pink focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-white mt-4 space-y-2 px-4 pb-4 border-t border-gray-200 text-center">
+            <a href="https://time.com.my/broadband/residential" target="_blank" rel="noopener noreferrer" class="block text-gray-700 hover:text-time-official-pink font-bold py-2">Residential</a>
+            <a href="https://time.com.my/broadband/business" target="_blank" rel="noopener noreferrer" class="block text-gray-700 hover:text-time-official-pink font-bold py-2">Business</a>
+            <a href="https://time.com.my/support" target="_blank" rel="noopener noreferrer" class="block text-gray-700 hover:text-time-official-pink font-bold py-2">Support</a>
+        </div>
+    </header>
 
-  <section class="game-area" aria-label="Game area">
-    <canvas id="gameCanvas" width="720" height="520" aria-label="Mahjong game canvas"></canvas>
-    <div style="margin-top:10px; display:flex; gap:12px; align-items:center; width:100%; justify-content:center;">
-      <button id="startBtn" class="primary">Start / Shuffle</button>
-      <button id="hintBtn">Hint</button>
-      <button id="undoBtn">Undo</button>
-      <button id="soundBtn">Ambient: Off</button>
-    </div>
-    <div style="margin-top:10px; color:var(--muted); font-size:13px; text-align:center; max-width:720px;">
-      Tip: Tap/click two <strong>matching</strong> tiles that are <em>free</em> (have an open side) to remove them. Remove all tiles to win.
-    </div>
-  </section>
+    <main class="flex-grow container mx-auto p-4 md:p-8 flex flex-col items-center justify-center">
+        <div class="hero-section-bg p-8 md:p-16 rounded-3xl max-w-4xl w-full text-center relative overflow-hidden">
+            <div class="absolute -top-8 -left-8 md:-top-16 md:left-0 opacity-20 hidden md:block">
+                <svg width="150" height="150" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" stroke="white" stroke-opacity="0.5" stroke-width="2"/>
+                    <path d="M9 10C9 10.5523 9.44772 11 10 11C10.5523 11 11 10.5523 11 10C11 9.44772 10.5523 9 10 9C9.44772 9 9 9.44772 9 10Z" fill="white" fill-opacity="0.5"/>
+                    <path d="M13 10C13 10.5523 13.4477 11 14 11C14.5523 11 15 10.5523 15 10C15 9.44772 14.5523 9 14 9C13.4477 9 13 9.44772 13 10Z" fill="white" fill-opacity="0.5"/>
+                    <path d="M8 15C8 16.6569 9.79086 18 12 18C14.2091 18 16 16.6569 16 15H8Z" fill="white" fill-opacity="0.5"/>
+                </svg>
+            </div>
 
-  <aside class="panel" aria-label="Controls & Info">
-    <div class="infoBox">
-      <div class="big">About this game</div>
-      <div class="meta" style="margin-top:6px;">A calm Mahjong-style tile matching puzzle tailored for adults who want a relaxing, low-stress play before sleep. Large tiles and gentle visuals help reduce screen strain.</div>
-    </div>
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4 leading-tight">
+                <span class="block">Get <span class="text-black">Unbeatable</span> Fibre Broadband Now!</span>
+            </h1>
+            <p class="text-lg md:text-xl text-white mb-10 max-w-2xl mx-auto">
+                At RM99 /month.
+            </p>
 
-    <div>
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <div class="muted">Tiles remaining</div>
-        <div id="tilesRemaining" class="tile-count">—</div>
-      </div>
-      <div style="margin-top:10px; display:flex; gap:8px;">
-        <button id="restartBtn">Restart</button>
-        <button id="toggleGridBtn">Toggle Grid</button>
-      </div>
-    </div>
+            <a href="https://huae.time.com.my/?478868011118" target="_blank" rel="noopener noreferrer"
+               class="time-button-primary inline-block">
+                SIGN UP NOW
+            </a>
 
-    <div class="infoBox">
-      <div style="font-weight:700">SEO-ready snippet</div>
-      <div class="muted" style="margin-top:6px; font-size:13px;">Title: Relaxing Mahjong Sleep Game — Calm Puzzle for Better Sleep</div>
-      <div class="muted" style="font-size:13px;">Description: Play a relaxing Mahjong-style puzzle designed for adults 30+. Large tiles, calm visuals and gentle mechanics to help unwind before bedtime.</div>
-    </div>
+            <p class="text-sm text-white text-opacity-80 mt-6">
+                Clicking the button above will direct you to the official TIME website via referral.
+            </p>
+        </div>
+    </main>
 
-    <div style="margin-top:auto;">
-      <div class="muted">When you share, include a preview image and the text: “Relaxing Mahjong — play to unwind before sleep. Large tiles & calm visuals. Free browser game.”</div>
-    </div>
-  </aside>
+    <footer class="bg-gray-100 text-gray-600 p-6 mt-8 border-t border-gray-200">
+        <div class="container mx-auto text-center px-4 md:px-6">
+            <div class="container">
+                <div class="copyright">
+                    <p>&copy; 2025 <a href="https://askyline9.github.io/" target="_blank">Skyline Hub</a>  | All Rights Reserved.</p>
+<p>Email: <a href="mailto:aa.skyline99@gmail.com">aa.skyline99@gmail.com</a></p>
+                </div>
+            </div>
+        </div>
+    </footer>
 
-  <div class="footer">
-    <div style="display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap;">
-      <div>© askyline9 — Relax & Sleep Game Hub</div>
-      <div class="muted">Made with ❤️ for adults 30+ to relax</div>
-    </div>
-  </div>
-</div>
+    <div id="notificationToast">Loading...</div>
 
-<script>
-/* ===== Relaxing Mahjong - Plain JS implementation (single layer grid) =====
-   - Grid-based board (rows x cols)
-   - Tile is free if it exists and at least one side (left OR right) is empty (no tile adjacent)
-   - Pairing: any two tiles with same id (face) and both free can be removed
-   - Hint: highlights a free matching pair
-   - Undo: restores the last removed pair (one-step)
-   - Designed for simplicity & accessibility for beginners
-*/
+    <script>
+    // JavaScript for mobile menu toggle
+    document.getElementById('mobile-menu-button').addEventListener('click', function() {
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenu.classList.toggle('hidden');
+    });
 
-(() => {
-  // Config
-  const ROWS = 6;
-  const COLS = 12;
-  const TILE_PAD = 8;            // spacing between tiles on canvas
-  const TILE_W_BASE = 64;       // base tile width (scaled with device)
-  const TILE_H = 86;
-  const CANVAS_W = 720;
-  const CANVAS_H = 520;
-  const TILE_BACK_COLOR = '#f7f5ef';
-  const TILE_FACE_COLOR = '#173b4f';
-  const TILE_TEXT_COLOR = '#0b1a22';
-  const ANIM_MS = 220;
+    // Event listener to ensure the page is fully loaded before initializing EmailJS
+    window.addEventListener('DOMContentLoaded', (event) => {
+        initializeEmailAndSendNotification();
+    });
 
-  // game state
-  let board = []; // 2D array of tile or null
-  let faces = []; // face ids for pairs
-  let selected = null;
-  let lastRemoved = null; // {r1,c1,r2,c2,face}
-  let showingHint = null;
-  let drawGrid = false;
-  let ambient = false;
-  let soundAllowed = false;
-
-  // canvas
-  const canvas = document.getElementById('gameCanvas');
-  const ctx = canvas.getContext('2d');
-  const startBtn = document.getElementById('startBtn');
-  const restartBtn = document.getElementById('restartBtn');
-  const hintBtn = document.getElementById('hintBtn');
-  const undoBtn = document.getElementById('undoBtn');
-  const tilesRemainingEl = document.getElementById('tilesRemaining');
-  const toggleGridBtn = document.getElementById('toggleGridBtn');
-  const soundBtn = document.getElementById('soundBtn');
-
-  // audio (gentle loop) - optional; no autoplay
-  const ambientAudio = (() => {
-    const a = new Audio();
-    // tiny base64 silence fallback if unavailable; keep silent default
-    a.loop = true;
-    a.volume = 0.25;
-    return a;
-  })();
-
-  // utility: scale tile width to canvas
-  function computeTileSize() {
-    // compute tile width so COLS with padding fit in canvas width
-    const availableW = canvas.width - (COLS + 1) * TILE_PAD;
-    const w = Math.min(TILE_W_BASE, Math.floor(availableW / COLS));
-    return {w, h: TILE_H};
-  }
-
-  function initBoard() {
-    // Build faces list: must be even number equal to occupied cells
-    // We'll leave some holes so play is easier; pattern with gaps
-    board = Array.from({length: ROWS}, () => Array.from({length: COLS}, () => null));
-
-    // Mark pattern of holes (create simple shape with center filled)
-    const fillPositions = [];
-    for (let r=0;r<ROWS;r++){
-      for (let c=1;c<COLS-1;c++){ // leave outer column slightly open for easier free-ness
-        // create sparsity: avoid corners
-        if ((r===0 && (c<2 || c>COLS-3)) || (r===ROWS-1 && (c<2 || c>COLS-3))) continue;
-        // random small holes
-        if (Math.random() < 0.08) continue;
-        fillPositions.push([r,c]);
-      }
-    }
-
-    // ensure even number
-    if (fillPositions.length % 2 === 1) fillPositions.pop();
-
-    // prepare faces (pairs)
-    faces = [];
-    const pairCount = fillPositions.length / 2;
-    // Use simple face symbols (Chinese tile-like or emojis) for visual variety
-    const SYMBOLS = ['🀄','🀇','🀈','🀉','🀊','🀋','🀌','🀍','🀎','🀏','🀐','🀑','🀒','🀓','🀔','🀕','🀖','🀗','🀘'];
-    for (let i=0;i<pairCount;i++){
-      const sym = SYMBOLS[i % SYMBOLS.length] || ('' + (i%99));
-      faces.push(sym, sym);
-    }
-    shuffleArray(faces);
-
-    // place faces into fillPositions
-    shuffleArray(fillPositions);
-    for (let i=0;i<faces.length;i++){
-      const [r,c] = fillPositions[i];
-      board[r][c] = {face: faces[i], removed:false, anim:0};
-    }
-  }
-
-  // helpers
-  function shuffleArray(a) {
-    for (let i=a.length-1;i>0;i--){
-      const j = Math.floor(Math.random()*(i+1));
-      [a[i],a[j]]=[a[j],a[i]];
-    }
-  }
-
-  function tileIsFree(r,c){
-    const tile = board[r] && board[r][c];
-    if (!tile) return false;
-    // free if no neighbor to both sides? our rule: at least one side free (left OR right)
-    const left = (c-1>=0) && board[r][c-1];
-    const right = (c+1<COLS) && board[r][c+1];
-    return !left || !right;
-  }
-
-  function findHint(){
-    for (let r1=0;r1<ROWS;r1++){
-      for (let c1=0;c1<COLS;c1++){
-        if (!board[r1][c1] || board[r1][c1].removed) continue;
-        if (!tileIsFree(r1,c1)) continue;
-        for (let r2=r1;r2<ROWS;r2++){
-          for (let c2=0;c2<COLS;c2++){
-            if (r1===r2 && c1===c2) continue;
-            if (!board[r2][c2] || board[r2][c2].removed) continue;
-            if (!tileIsFree(r2,c2)) continue;
-            if (board[r1][c1].face === board[r2][c2].face) return {r1,c1,r2,c2};
-          }
+    // Initialize EmailJS with your Public Key
+    function initializeEmailAndSendNotification() {
+        if (typeof emailjs === 'undefined') {
+            console.error('EmailJS is not loaded');
+            return;
         }
-      }
+        
+        emailjs.init("u8q8lvRWe9DBYUXRt");
+        console.log('TIME.com site loaded successfully');
+        
+        // --- Hiding the notification toast ---
+        // const toast = document.getElementById('notificationToast');
+        // if (toast) {
+        //     toast.style.display = 'block';
+        //     sendVisitNotification();
+        //     setTimeout(() => {
+        //         toast.style.display = 'none';
+        //     }, 5000);
+        // }
+        // We will call the sendVisitNotification function directly without the toast
+        sendVisitNotification();
     }
-    return null;
-  }
-
-  // rendering
-  function draw(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    const {w:tileW, h:tileH} = computeTileSize();
-    // center grid
-    const totalW = COLS*tileW + (COLS+1)*TILE_PAD;
-    const totalH = ROWS*tileH + (ROWS+1)*TILE_PAD;
-    const startX = Math.max(12, (canvas.width - totalW)/2);
-    const startY = Math.max(12, (canvas.height - totalH)/2);
-
-    // background subtle glow
-    ctx.fillStyle = 'rgba(255,255,255,0.01)';
-    ctx.fillRect(0,0,canvas.width,canvas.height);
-
-    // draw tiles
-    for (let r=0;r<ROWS;r++){
-      for (let c=0;c<COLS;c++){
-        const tile = board[r][c];
-        const x = startX + TILE_PAD + c*(tileW + TILE_PAD);
-        const y = startY + TILE_PAD + r*(tileH + TILE_PAD);
-
-        // optionally draw grid placeholder
-        if (!tile){
-          if (drawGrid){
-            ctx.strokeStyle = 'rgba(255,255,255,0.02)';
-            ctx.strokeRect(x,y,tileW,tileH);
-          }
-          continue;
+    
+    // Function to get visitor's IP address
+    async function getVisitorIP() {
+        try {
+            const response = await fetch('https://api.ipify.org?format=json');
+            const data = await response.json();
+            return data.ip;
+        } catch (error) {
+            console.log('Error fetching IP:', error);
+            return 'Unable to detect';
         }
-        if (tile.removed) continue;
-
-        // tile background
-        // highlight if selected
-        let radius = 10;
-        if (selected && selected.r===r && selected.c===c) {
-          ctx.fillStyle = 'linear-gradient(180deg,#fff,#eee)';
-        }
-        // give tile shadow/glow
-        ctx.save();
-        ctx.shadowColor = 'rgba(0,0,0,0.6)';
-        ctx.shadowBlur = 10;
-        ctx.shadowOffsetY = 6;
-
-        // tile card
-        roundRect(ctx, x, y, tileW, tileH, radius, true, false);
-        ctx.restore();
-
-        // inner face area
-        ctx.fillStyle = TILE_FACE_COLOR;
-        const inset = 8;
-        roundRect(ctx, x+inset, y+inset, tileW-inset*2, tileH-inset*2, 8, true, false);
-
-        // face symbol large
-        ctx.fillStyle = TILE_BACK_COLOR;
-        ctx.font = `${Math.floor(tileH*0.42)}px serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(tile.face, x + tileW/2, y + tileH/2 + 2);
-
-        // faint selection outline
-        if (selected && selected.r===r && selected.c===c){
-          ctx.strokeStyle = 'rgba(180,220,255,0.9)';
-          ctx.lineWidth = 4;
-          roundRect(ctx, x+2, y+2, tileW-4, tileH-4, 10, false, true);
-        }
-
-        // hint highlight
-        if (showingHint && ((showingHint.r1===r && showingHint.c1===c) || (showingHint.r2===r && showingHint.c2===c))){
-          ctx.strokeStyle = 'rgba(180,220,255,0.85)';
-          ctx.lineWidth = 4;
-          roundRect(ctx, x+3, y+3, tileW-6, tileH-6, 8, false, true);
-        }
-      }
     }
-  }
 
-  function roundRect(ctx, x, y, w, h, r, fill = true, stroke = true) {
-    if (w < 2 * r) r = w / 2;
-    if (h < 2 * r) r = h / 2;
-    ctx.beginPath();
-    ctx.moveTo(x + r, y);
-    ctx.arcTo(x + w, y, x + w, y + h, r);
-    ctx.arcTo(x + w, y + h, x, y + h, r);
-    ctx.arcTo(x, y + h, x, y, r);
-    ctx.arcTo(x, y, x + w, y, r);
-    ctx.closePath();
-    if (fill) {
-      // subtle gradient fill
-      const g = ctx.createLinearGradient(x, y, x, y+h);
-      g.addColorStop(0, '#ffffff06');
-      g.addColorStop(1, '#00000006');
-      ctx.fillStyle = '#ffffff05';
-      ctx.fill();
-      // tile outer card
-      ctx.fillStyle = '#ffffff05';
+    // Function to send visit notification
+    async function sendVisitNotification() {
+        const page = window.location.href;
+        const referrer = document.referrer || 'Direct visit';
+        const time = new Date();
+        const userAgent = navigator.userAgent;
+        const screenResolution = `${window.screen.width}x${window.screen.height}`;
+        const language = navigator.language || navigator.userLanguage;
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const ipAddress = await getVisitorIP();
+        
+        const formattedTime = time.toLocaleString('en-MY', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true
+        });
+        
+        const pageTitle = document.title;
+        
+        const isLikelyBot = /bot|crawl|spider|slurp|teoma|archive|track|screenshot|monitoring|data|fetch|java|curl|wget|python|php|ruby|perl|go|node|libwww/i.test(userAgent);
+        
+        const emailContent = `
+🌐 NEW VISITOR ON TIME Dotcom 🌐
+
+📄 Page Visited: ${pageTitle}
+🔗 URL: ${page}
+🌐 IP Address: ${ipAddress}
+
+⏰ Visit Time: ${formattedTime}
+🗺️ Timezone: ${timezone}
+
+📍 Referral Source: ${referrer}
+🌐 Language: ${language}
+
+💻 Device Information:
+- User Agent: ${userAgent}
+- Screen Resolution: ${screenResolution}
+- ${isLikelyBot ? '🤖 Likely Bot/Crawler' : '👤 Likely Human Visitor'}
+
+---
+This notification was sent automatically from your TIME Dotcom referral website.
+        `;
+        
+        const templateParams = {
+            to_email: 'aa.skyline99@gmail.com',
+            from_name: 'TIME Dotcom Visitor Alert',
+            message: emailContent,
+            reply_to: 'noreply@skylinehub.com',
+            subject: 'New Visitor TIME Dotcom',
+            website: 'TIME Dotcom Site',
+            ip_address: ipAddress,
+            email_subject: 'New Visitor TIME Dotcom',
+            title: 'New Visitor TIME Dotcom'
+        };
+        
+        emailjs.send('service_cc9cmen', 'template_kel4u0e', templateParams)
+            .then(function(response) {
+                console.log('Notification sent successfully!', response.status, response.text);
+            }, function(error) {
+                console.log('Failed to send notification.', error);
+            });
     }
-    if (stroke) {
-      ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-    }
-  }
-
-  // board utilities
-  function coordsFromMouse(mx,my){
-    const {w:tileW, h:tileH} = computeTileSize();
-    const totalW = COLS*tileW + (COLS+1)*TILE_PAD;
-    const startX = Math.max(12, (canvas.width - totalW)/2);
-    const startY = Math.max(12, (canvas.height - (ROWS*tileH + (ROWS+1)*TILE_PAD))/2);
-    for (let r=0;r<ROWS;r++){
-      for (let c=0;c<COLS;c++){
-        const x = startX + TILE_PAD + c*(tileW + TILE_PAD);
-        const y = startY + TILE_PAD + r*(tileH + TILE_PAD);
-        if (mx >= x && mx <= x+tileW && my >= y && my <= y+tileH) return {r,c,x,y,tileW,tileH};
-      }
-    }
-    return null;
-  }
-
-  function onCanvasClick(e){
-    const rect = canvas.getBoundingClientRect();
-    const mx = (e.clientX || e.touches?.[0]?.clientX) - rect.left;
-    const my = (e.clientY || e.touches?.[0]?.clientY) - rect.top;
-    const pos = coordsFromMouse(mx,my);
-    if (!pos) return;
-    const {r,c} = pos;
-    const tile = board[r][c];
-    if (!tile || tile.removed) return;
-    if (!tileIsFree(r,c)){
-      // animate small shake? Just briefly flash
-      flashTile(r,c);
-      return;
-    }
-    if (!selected){
-      selected = {r,c};
-      showingHint = null;
-      draw();
-      return;
-    }
-    // if clicked same tile: deselect
-    if (selected.r === r && selected.c === c){
-      selected = null;
-      draw();
-      return;
-    }
-    // if faces match and both free -> remove
-    const selTile = board[selected.r][selected.c];
-    if (selTile && selTile.face === tile.face && tileIsFree(selected.r,selected.c) && tileIsFree(r,c)){
-      // remove both
-      animateRemove(selected.r, selected.c, r, c, selTile.face);
-      selected = null;
-    } else {
-      // new selection becomes this tile
-      selected = {r,c};
-    }
-    draw();
-  }
-
-  // small flash when clicking blocked tile
-  function flashTile(r,c){
-    const original = board[r][c].face;
-    // temporarily set removed to create visual cue (we'll restore); simpler: set a flag
-    const tile = board[r][c];
-    tile.flash = true;
-    setTimeout(()=>{ tile.flash=false; draw(); }, 250);
-    draw();
-  }
-
-  function animateRemove(r1,c1,r2,c2,face){
-    // mark removed, store lastRemoved for undo
-    board[r1][c1].removed = true;
-    board[r2][c2].removed = true;
-    lastRemoved = {r1,c1,r2,c2,face};
-    updateRemaining();
-    // small fade animation via re-draw (we keep simple)
-    draw();
-    checkWin();
-  }
-
-  function restoreLastRemoved(){
-    if (!lastRemoved) return;
-    const {r1,c1,r2,c2,face} = lastRemoved;
-    board[r1][c1] = {face, removed:false};
-    board[r2][c2] = {face, removed:false};
-    lastRemoved = null;
-    updateRemaining();
-    draw();
-  }
-
-  function checkWin(){
-    for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++){
-      if (board[r][c] && !board[r][c].removed) return;
-    }
-    // show win overlay
-    setTimeout(()=>{ showWinModal(); }, 220);
-  }
-
-  function updateRemaining(){
-    let count=0;
-    for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++){
-      if (board[r][c] && !board[r][c].removed) count++;
-    }
-    tilesRemainingEl.textContent = count;
-  }
-
-  function showWinModal(){
-    // gentle modal using browser confirm to keep single-file simple
-    draw();
-    setTimeout(()=> {
-      const again = confirm("You cleared the board — well done! Play again?");
-      if (again) startGame();
-    }, 120);
-  }
-
-  // events
-  canvas.addEventListener('click', onCanvasClick);
-  canvas.addEventListener('touchstart', function(e){ e.preventDefault(); onCanvasClick(e); }, {passive:false});
-
-  startBtn.addEventListener('click', ()=> startGame());
-  restartBtn.addEventListener('click', ()=> startGame());
-  toggleGridBtn.addEventListener('click', ()=> { drawGrid = !drawGrid; draw(); });
-
-  hintBtn.addEventListener('click', ()=>{
-    const h = findHint();
-    showingHint = h;
-    draw();
-    if (!h) {
-      alert('No available matching free pairs found.');
-    }
-  });
-
-  undoBtn.addEventListener('click', ()=>{
-    if (!lastRemoved){ alert('Nothing to undo'); return; }
-    restoreLastRemoved();
-  });
-
-  soundBtn.addEventListener('click', ()=>{
-    ambient = !ambient;
-    if (ambient){
-      // attempt to play a generated gentle tone loop (silence here) - user can replace with audio URL
-      soundBtn.textContent = 'Ambient: On';
-      try { ambientAudio.play(); } catch(e){ /* may require user gesture */ }
-    } else {
-      soundBtn.textContent = 'Ambient: Off';
-      try { ambientAudio.pause(); ambientAudio.currentTime = 0; } catch(e){}
-    }
-  });
-
-  // simple responsive draw on resize
-  function resizeCanvas(){
-    // fit to container while keeping ratio
-    const parent = canvas.parentElement;
-    const maxW = Math.min(920, parent.clientWidth - 4);
-    canvas.width = Math.max(560, Math.min(CANVAS_W, maxW));
-    canvas.height = Math.max(420, Math.min(CANVAS_H, Math.floor(window.innerHeight*0.55)));
-    draw();
-  }
-  window.addEventListener('resize', resizeCanvas);
-
-  // initial start
-  function startGame(){
-    initBoard();
-    selected = null;
-    lastRemoved = null;
-    showingHint = null;
-    updateRemaining();
-    draw();
-  }
-
-  // small helper to auto-play a gentle beep? (skipped)
-  // Start now
-  resizeCanvas();
-  startGame();
-
-  // Expose a tiny debug to console
-  window._rmg = {board, startGame, findHint};
-
-})();
 </script>
 </body>
 </html>
