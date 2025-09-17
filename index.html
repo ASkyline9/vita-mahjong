@@ -9,59 +9,426 @@
   <meta name="author" content="Skyline Hub">
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js"></script>
   <style>
+    :root {
+      --primary-bg: #0b0f2e;
+      --secondary-bg: #1a1446;
+      --tile-bg: #2d2b55;
+      --tile-border: #5c4fc7;
+      --tile-highlight: #7668e6;
+      --gold: #ffd700;
+      --text-gold: #f8d568;
+    }
+    
     body {
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(180deg, #0b0f2e, #1a1446);
+      background: linear-gradient(180deg, var(--primary-bg), var(--secondary-bg));
       color: #fff;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      overflow-x: hidden;
     }
+    
+    /* Game board styling */
+    .game-container {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .game-board {
+      background: rgba(13, 10, 38, 0.7);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(92, 79, 199, 0.3);
+      position: relative;
+      overflow: hidden;
+      min-height: 500px;
+    }
+    
+    .game-board::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" opacity="0.03"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+      pointer-events: none;
+    }
+    
+    /* Tile styling inspired by Vita Mahjong */
     .tile {
       width: 60px;
       height: 80px;
-      background: #2d2b55;
-      border: 2px solid #5c4fc7;
+      background: linear-gradient(145deg, #3a3770, #2a2850);
+      border: 2px solid var(--tile-border);
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 20px;
+      font-size: 28px;
       font-weight: bold;
-      transition: transform 0.2s ease;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), 
+                  inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      position: absolute;
+      overflow: hidden;
+      user-select: none;
     }
-    .tile:hover { transform: scale(1.05); }
-    .matched { opacity: 0; pointer-events: none; transition: opacity 0.6s ease; }
-    footer {
-      background-color: #0d0a26;
+    
+    .tile::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 50%);
+      pointer-events: none;
+    }
+    
+    .tile:hover { 
+      transform: translateY(-5px) scale(1.05); 
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4), 
+                  inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+    
+    .tile.selected {
+      background: linear-gradient(145deg, #5c4fc7, #4a3fb5);
+      transform: translateY(-3px);
+      box-shadow: 0 0 15px #ffd700, inset 0 0 10px #ffd700;
+    }
+    
+    .tile.matched { 
+      opacity: 0; 
+      pointer-events: none; 
+      transition: opacity 0.6s ease, transform 0.6s ease;
+      transform: scale(0.1) rotate(360deg);
+    }
+    
+    .tile.blocked {
+      filter: brightness(0.7);
+      cursor: not-allowed;
+    }
+    
+    /* Layout for mahjong solitaire */
+    .board-layout {
+      position: relative;
+      width: 100%;
+      height: 450px;
+      margin: 0 auto;
+    }
+    
+    /* Decorative elements */
+    .chinese-pattern {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      opacity: 0.1;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50,0 L60,40 L100,50 L60,60 L50,100 L40,60 L0,50 L40,40 Z" fill="white"/></svg>');
+      background-size: contain;
+      z-index: -1;
+    }
+    
+    .pattern-1 {
+      top: 10%;
+      left: 5%;
+      transform: rotate(15deg);
+    }
+    
+    .pattern-2 {
+      bottom: 10%;
+      right: 5%;
+      transform: rotate(-15deg);
+    }
+    
+    /* Header styling */
+    .game-title {
+      font-size: 2.5rem;
+      font-weight: 700;
       text-align: center;
-      padding: 1rem;
-      font-size: 14px;
+      margin-bottom: 1.5rem;
+      color: var(--text-gold);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+      position: relative;
+      display: inline-block;
     }
+    
+    .game-title::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 25%;
+      width: 50%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+    
+    /* Button styling */
     button {
-      background: #5c4fc7;
+      background: linear-gradient(145deg, #5c4fc7, #4a3fb5);
       color: #fff;
-      padding: 0.5rem 1rem;
+      padding: 0.75rem 1.5rem;
       border-radius: 8px;
       margin: 0 0.5rem;
-      transition: background 0.3s ease;
+      transition: all 0.3s ease;
+      border: none;
+      font-weight: 600;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    button:hover { background: #7668e6; }
+    
+    button:hover { 
+      background: linear-gradient(145deg, #7668e6, #5c4fc7);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Footer styling */
+    footer {
+      background-color: rgba(13, 10, 38, 0.8);
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 14px;
+      margin-top: auto;
+      border-top: 1px solid rgba(92, 79, 199, 0.3);
+    }
+    
+    /* Controls section */
+    .game-controls {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+    
+    /* Stats display */
+    .game-stats {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+      color: var(--text-gold);
+      font-weight: 600;
+    }
+    
+    .stat-box {
+      background: rgba(13, 10, 38, 0.5);
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: 1px solid rgba(92, 79, 199, 0.3);
+    }
+    
+    /* Layout selection */
+    .layout-selection {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .layout-btn {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .tile {
+        width: 50px;
+        height: 70px;
+        font-size: 22px;
+      }
+      
+      .game-title {
+        font-size: 2rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .tile {
+        width: 40px;
+        height: 60px;
+        font-size: 18px;
+      }
+      
+      button {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+      }
+      
+      .game-stats {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+      
+      .layout-selection {
+        gap: 5px;
+      }
+      
+      .layout-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+      }
+    }
+    
+    /* Confetti effect */
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: var(--gold);
+      opacity: 0.8;
+      border-radius: 0;
+      z-index: 10;
+    }
+    
+    /* Game complete message */
+    #gameComplete {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+    
+    #gameComplete.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    .completion-message {
+      background: linear-gradient(145deg, #1a1446, #0b0f2e);
+      padding: 2rem;
+      border-radius: 16px;
+      text-align: center;
+      border: 2px solid var(--gold);
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+      max-width: 90%;
+      width: 400px;
+    }
+    
+    /* Shimmer effect for tiles */
+    @keyframes shimmer {
+      0% { transform: translateX(-100%) rotate(45deg); }
+      100% { transform: translateX(200%) rotate(45deg); }
+    }
+    
+    .shimmer {
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        45deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 100%
+      );
+      animation: shimmer 1.5s infinite;
+      pointer-events: none;
+    }
+    
+    /* Pulse animation */
+    @keyframes pulse {
+      0% { box-shadow: 0 0 5px #ffd700; }
+      50% { box-shadow: 0 0 20px #ffd700; }
+      100% { box-shadow: 0 0 5px #ffd700; }
+    }
+    
+    /* Layout preview */
+    .layout-preview {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 1.2rem;
+      color: var(--text-gold);
+      min-height: 30px;
+    }
   </style>
 </head>
 <body>
-  <header class="p-4 text-center text-xl font-bold text-purple-300">🌙 Vita Mahjong Relax 🌙</header>
+  <!-- Decorative patterns -->
+  <div class="chinese-pattern pattern-1"></div>
+  <div class="chinese-pattern pattern-2"></div>
+
+  <header class="p-6 text-center">
+    <h1 class="game-title">🌙 RoVita Mahjong Relax 🌙</h1>
+  </header>
 
   <main class="flex-grow flex flex-col items-center justify-center p-4">
-    <div id="controls" class="mb-4 flex space-x-2">
-      <button id="restartBtn">🔄 Restart</button>
-      <button id="musicToggleBtn">🔇 Music Off</button>
+    <div class="game-container">
+      <div class="game-controls">
+        <button id="restartBtn"><i class="fas fa-redo"></i> Restart Game</button>
+        <button id="hintBtn"><i class="fas fa-lightbulb"></i> Hint</button>
+        <button id="musicToggleBtn"><i class="fas fa-volume-mute"></i> Music Off</button>
+        <button id="shuffleBtn"><i class="fas fa-random"></i> Shuffle</button>
+      </div>
+      
+      <div class="layout-selection">
+        <button class="layout-btn" data-layout="pyramid">Pyramid</button>
+        <button class="layout-btn" data-layout="rectangle">Rectangle</button>
+        <button class="layout-btn" data-layout="circle">Circle</button>
+        <button class="layout-btn" data-layout="guitar">Guitar</button>
+        <button class="layout-btn" data-layout="random">Random</button>
+      </div>
+      
+      <div class="layout-preview" id="layoutName">Current Layout: Pyramid</div>
+      
+      <div class="game-board">
+        <div class="board-layout" id="gameBoard"></div>
+      </div>
+      
+      <div class="game-stats">
+        <div class="stat-box">
+          <i class="fas fa-clock"></i> Time: <span id="timer">00:00</span>
+        </div>
+        <div class="stat-box">
+          <i class="fas fa-check-circle"></i> Matched: <span id="matchedCount">0</span>/<span id="totalPairs">0</span>
+        </div>
+        <div class="stat-box">
+          <i class="fas fa-star"></i> Moves: <span id="moveCount">0</span>
+        </div>
+      </div>
     </div>
-    <div id="gameBoard" class="grid grid-cols-4 gap-4"></div>
   </main>
+
+  <!-- Game completion overlay -->
+  <div id="gameComplete">
+    <div class="completion-message">
+      <h2 class="text-2xl font-bold mb-4" style="color: var(--text-gold);">Congratulations!</h2>
+      <p class="mb-2">You've completed the puzzle!</p>
+      <p class="mb-4">Time: <span id="finalTime">00:00</span> | Moves: <span id="finalMoves">0</span></p>
+      <button id="playAgainBtn"><i class="fas fa-play"></i> Play Again</button>
+    </div>
+  </div>
 
   <footer>
     <p>&copy; 2025 <a href="https://askyline9.github.io/" target="_blank" class="text-purple-300">Skyline Hub</a> | All Rights Reserved.</p>
@@ -70,155 +437,607 @@
 
   <!-- Background Music -->
   <audio id="bgMusic" loop preload="auto">
-    <source src="assets/chinese.mp3" type="audio/mpeg">
+    <source src="https://assets.mixkit.co/music/preview/mixkit-spirit-of-the-east-528.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>
 
+  <!-- Sound Effects -->
+  <audio id="selectSound" preload="auto">
+    <source src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="matchSound" preload="auto">
+    <source src="https://assets.mixkit.co/sfx/preview/mixkit-magic-sparkles-3001.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="winSound" preload="auto">
+    <source src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="shuffleSound" preload="auto">
+    <source src="https://assets.mixkit.co/sfx/preview/mixkit-card-shuffle-1131.mp3" type="audio/mpeg">
+  </audio>
+
   <script>
-// EmailJS init
-document.addEventListener("DOMContentLoaded", () => {
-  emailjs.init("u8q8lvRWe9DBYUXRt"); // ✅ your public key
-  sendVisitNotification();
-  initGame();
-});
+    // EmailJS init
+    document.addEventListener("DOMContentLoaded", () => {
+      emailjs.init("u8q8lvRWe9DBYUXRt"); // ✅ your public key
+      sendVisitNotification();
+      initGame();
+    });
 
-// ---------------- Email Tracking ----------------
-async function getVisitorIP() {
-  try {
-    const res = await fetch('https://api.ipify.org?format=json');
-    const data = await res.json();
-    return data.ip;
-  } catch { return 'Unable to detect'; }
-}
-
-async function sendVisitNotification() {
-  const page = window.location.href;
-  const referrer = document.referrer || 'Direct';
-  const time = new Date().toLocaleString('en-MY');
-  const userAgent = navigator.userAgent;
-  const screenResolution = `${window.screen.width}x${window.screen.height}`;
-  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const ipAddress = await getVisitorIP();
-
-  // Bot check
-  const isLikelyBot = /bot|crawl|spider|slurp|teoma|archive|track|screenshot|monitoring|data|fetch|java|curl|wget|python|php|ruby|perl|go|node|libwww/i.test(userAgent);
-
-  const emailContent = `
-🌐 NEW VISITOR ON VITA MAHJONG RELAX 🌐
-
-📄 Page: Vita Mahjong Relax
-🔗 URL: ${page}
-🌐 IP Address: ${ipAddress}
-
-⏰ Visit Time: ${time}
-🗺️ Timezone: ${timezone}
-📍 Referrer: ${referrer}
-
-💻 Device Information:
-- Screen: ${screenResolution}
-- User Agent: ${userAgent}
-
-Detected: ${isLikelyBot ? '🤖 Likely Bot/Crawler' : '👤 Likely Human'}
-  `;
-
-  const params = {
-    to_email: 'aa.skyline99@gmail.com',
-    from_name: 'Vita Mahjong Visitor',
-    message: emailContent,
-    subject: `New Visitor: RoVita Mahjong, ${ipAddress}` // ✅ subject with IP
-  };
-
-  emailjs.send('service_cc9cmen', 'template_kel4u0e', params)
-    .then(res => console.log("Email sent ✅", res))
-    .catch(err => console.error("Email send error ❌", err));
-}
-
-// ---------------- Mahjong Game ----------------
-const symbols = ["🐉","🀄","🍵","🎋","🌸","💮","🧧","🎎"];
-let firstTile = null, lock = false;
-
-function initGame() {
-  const board = document.getElementById("gameBoard");
-  board.innerHTML = "";
-  const deck = [...symbols, ...symbols].sort(() => Math.random() - 0.5);
-
-  deck.forEach(sym => {
-    const div = document.createElement("div");
-    div.className = "tile";
-    div.textContent = sym;
-    div.addEventListener("click", () => handleTileClick(div));
-    board.appendChild(div);
-  });
-}
-
-function handleTileClick(tile) {
-  if (lock || tile.classList.contains("matched")) return;
-
-  if (!firstTile) {
-    firstTile = tile;
-    tile.style.background = "#7668e6";
-  } else {
-    if (tile !== firstTile && tile.textContent === firstTile.textContent) {
-      fadeOutTile(tile);
-      fadeOutTile(firstTile);
-    } else {
-      const prev = firstTile;
-      setTimeout(() => {
-        prev.style.background = "#2d2b55";
-        tile.style.background = "#2d2b55";
-      }, 500);
+    // ---------------- Email Tracking ----------------
+    async function getVisitorIP() {
+      try {
+        const res = await fetch('https://api.ipify.org?format=json');
+        const data = await res.json();
+        return data.ip;
+      } catch { return 'Unable to detect'; }
     }
-    firstTile = null;
-  }
-}
 
-function fadeOutTile(tile) {
-  tile.classList.add("matched");
-  setTimeout(() => { tile.style.visibility = "hidden"; }, 600);
-}
+    async function sendVisitNotification() {
+      const page = window.location.href;
+      const referrer = document.referrer || 'Direct';
+      const time = new Date().toLocaleString('en-MY');
+      const userAgent = navigator.userAgent;
+      const screenResolution = `${window.screen.width}x${window.screen.height}`;
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const ipAddress = await getVisitorIP();
 
-// Restart button
-document.getElementById("restartBtn").addEventListener("click", initGame);
+      // Bot check
+      const isLikelyBot = /bot|crawl|spider|slurp|teoma|archive|track|screenshot|monitoring|data|fetch|java|curl|wget|python|php|ruby|perl|go|node|libwww/i.test(userAgent);
 
-// ---------------- Music Control ----------------
-function fadeAudio(audio, from, to, duration=600) {
-  const stepTime = 50, steps = Math.round(duration/stepTime);
-  let currentStep = 0;
-  const delta = (to - from) / steps;
-  audio.volume = from;
-  clearInterval(audio._fadeInterval);
-  audio._fadeInterval = setInterval(() => {
-    currentStep++;
-    audio.volume = Math.min(1, Math.max(0, audio.volume + delta));
-    if (currentStep >= steps) {
+      const emailContent = `
+    🌐 NEW VISITOR ROVITA MAHJONG 🌐
+
+    📄 Page: Vita Mahjong Relax
+    🔗 URL: ${page}
+    🌐 IP Address: ${ipAddress}
+
+    ⏰ Visit Time: ${time}
+    🗺️ Timezone: ${timezone}
+    📍 Referrer: ${referrer}
+
+    💻 Device Information:
+    - Screen: ${screenResolution}
+    - User Agent: ${userAgent}
+
+    Detected: ${isLikelyBot ? '🤖 Likely Bot/Crawler' : '👤 Likely Human'}
+      `;
+
+      const params = {
+        to_email: 'aa.skyline99@gmail.com',
+        from_name: 'Vita Mahjong Visitor',
+        message: emailContent,
+        subject: `New Visitor: RoVita Mahjong, ${ipAddress}` // ✅ subject with IP
+      };
+
+      emailjs.send('service_cc9cmen', 'template_kel4u0e', params)
+        .then(res => console.log("Email sent ✅", res))
+        .catch(err => console.error("Email send error ❌", err));
+    }
+
+    // ---------------- Mahjong Game ----------------
+    const symbols = ["🐉", "🀄", "🍵", "🎋", "🌸", "💮", "🧧", "🎎", "🐼", "🎍", "🏮", "🎏", "🌊", "🎴", "🪷", "🌺"];
+    let firstTile = null;
+    let lock = false;
+    let matchedPairs = 0;
+    let totalPairs = 0;
+    let moveCount = 0;
+    let gameTimer = null;
+    let seconds = 0;
+    let tiles = [];
+    let layout = [];
+    let currentLayout = "pyramid";
+
+    // Layout generators
+    const layoutGenerators = {
+      pyramid: function() {
+        const positions = [];
+        // Layer 4 (top)
+        positions.push({x: 350, y: 100, z: 4});
+        
+        // Layer 3
+        positions.push({x: 300, y: 150, z: 3}, {x: 350, y: 150, z: 3}, {x: 400, y: 150, z: 3});
+        
+        // Layer 2
+        positions.push(
+          {x: 250, y: 200, z: 2}, {x: 300, y: 200, z: 2}, {x: 350, y: 200, z: 2}, 
+          {x: 400, y: 200, z: 2}, {x: 450, y: 200, z: 2}
+        );
+        
+        // Layer 1 (bottom)
+        positions.push(
+          {x: 200, y: 250, z: 1}, {x: 250, y: 250, z: 1}, {x: 300, y: 250, z: 1}, 
+          {x: 350, y: 250, z: 1}, {x: 400, y: 250, z: 1}, {x: 450, y: 250, z: 1}, 
+          {x: 500, y: 250, z: 1}
+        );
+        
+        return positions;
+      },
+      
+      rectangle: function() {
+        const positions = [];
+        const rows = 4;
+        const cols = 7;
+        const startX = 250;
+        const startY = 150;
+        
+        for (let z = 1; z <= 2; z++) {
+          for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
+              if (z === 2 && (row === 0 || row === rows-1 || col === 0 || col === cols-1)) continue;
+              
+              positions.push({
+                x: startX + col * 60,
+                y: startY + row * 70,
+                z: z
+              });
+            }
+          }
+        }
+        
+        return positions;
+      },
+      
+      circle: function() {
+        const positions = [];
+        const centerX = 400;
+        const centerY = 225;
+        const radius = 150;
+        
+        // Outer circle
+        for (let i = 0; i < 16; i++) {
+          const angle = (i / 16) * Math.PI * 2;
+          positions.push({
+            x: centerX + Math.cos(angle) * radius,
+            y: centerY + Math.sin(angle) * radius,
+            z: 1
+          });
+        }
+        
+        // Inner circle
+        for (let i = 0; i < 8; i++) {
+          const angle = (i / 8) * Math.PI * 2;
+          positions.push({
+            x: centerX + Math.cos(angle) * (radius - 70),
+            y: centerY + Math.sin(angle) * (radius - 70),
+            z: 2
+          });
+        }
+        
+        // Center
+        positions.push({
+          x: centerX,
+          y: centerY,
+          z: 3
+        });
+        
+        return positions;
+      },
+      
+      guitar: function() {
+        const positions = [];
+        // Body
+        for (let i = 0; i < 5; i++) {
+          for (let j = 0; j < 7; j++) {
+            if (i === 0 && (j < 2 || j > 4)) continue;
+            if (i === 4 && (j < 2 || j > 4)) continue;
+            
+            positions.push({
+              x: 250 + j * 60,
+              y: 150 + i * 70,
+              z: 1
+            });
+          }
+        }
+        
+        // Neck
+        for (let i = 0; i < 4; i++) {
+          for (let j = 0; j < 2; j++) {
+            positions.push({
+              x: 370 + j * 60,
+              y: 50 + i * 70,
+              z: 1
+            });
+          }
+        }
+        
+        return positions;
+      },
+      
+      random: function() {
+        const layouts = ["pyramid", "rectangle", "circle", "guitar"];
+        const randomLayout = layouts[Math.floor(Math.random() * layouts.length)];
+        return layoutGenerators[randomLayout]();
+      }
+    };
+
+    function initGame(layoutType = currentLayout) {
+      currentLayout = layoutType;
+      document.getElementById("layoutName").textContent = `Current Layout: ${layoutType.charAt(0).toUpperCase() + layoutType.slice(1)}`;
+      
+      // Reset game state
+      clearInterval(gameTimer);
+      seconds = 0;
+      matchedPairs = 0;
+      moveCount = 0;
+      updateStats();
+      
+      const board = document.getElementById("gameBoard");
+      board.innerHTML = "";
+      tiles = [];
+      
+      // Generate layout positions
+      const layoutPositions = layoutGenerators[layoutType]();
+      
+      // Create a full set of tiles (each symbol appears twice)
+      let deck = [];
+      const selectedSymbols = [...symbols].sort(() => Math.random() - 0.5).slice(0, Math.ceil(layoutPositions.length / 2));
+      
+      for (let symbol of selectedSymbols) {
+        // Add pairs until we have enough tiles
+        if (deck.length + 2 <= layoutPositions.length) {
+          deck.push(symbol, symbol);
+        }
+      }
+      
+      // If we still need more tiles, add more pairs
+      while (deck.length < layoutPositions.length) {
+        const extraSymbol = selectedSymbols[Math.floor(Math.random() * selectedSymbols.length)];
+        deck.push(extraSymbol, extraSymbol);
+      }
+      
+      // If we have too many tiles, trim the deck
+      deck = deck.slice(0, layoutPositions.length);
+      
+      // Shuffle the deck
+      deck = deck.sort(() => Math.random() - 0.5);
+      
+      // Create layout with positions
+      layout = [];
+      for (let i = 0; i < layoutPositions.length; i++) {
+        if (i < deck.length) {
+          layout.push({
+            x: layoutPositions[i].x,
+            y: layoutPositions[i].y,
+            z: layoutPositions[i].z,
+            symbol: deck[i],
+            id: i
+          });
+        }
+      }
+      
+      totalPairs = Math.floor(deck.length / 2);
+      document.getElementById("totalPairs").textContent = totalPairs;
+      
+      // Create tile elements
+      for (let tileData of layout) {
+        const tile = createTile(tileData);
+        board.appendChild(tile);
+        tiles.push(tile);
+      }
+      
+      // Update which tiles are selectable
+      updateSelectableTiles();
+      
+      // Start the timer
+      gameTimer = setInterval(() => {
+        seconds++;
+        updateTimer();
+      }, 1000);
+    }
+
+    function createTile(tileData) {
+      const div = document.createElement("div");
+      div.className = "tile";
+      div.textContent = tileData.symbol;
+      div.dataset.symbol = tileData.symbol;
+      div.dataset.id = tileData.id;
+      div.dataset.x = tileData.x;
+      div.dataset.y = tileData.y;
+      div.dataset.z = tileData.z;
+      div.style.left = tileData.x + 'px';
+      div.style.top = tileData.y + 'px';
+      div.style.zIndex = tileData.z;
+      
+      // Add shimmer effect
+      const shimmer = document.createElement("div");
+      shimmer.className = "shimmer";
+      div.appendChild(shimmer);
+      
+      div.addEventListener("click", () => handleTileClick(div));
+      return div;
+    }
+
+    function updateSelectableTiles() {
+      // Reset all tiles to blocked first
+      tiles.forEach(tile => {
+        if (!tile.classList.contains("matched")) {
+          tile.classList.add("blocked");
+        }
+      });
+      
+      // Find tiles that are free (not blocked by tiles above them or on the sides)
+      const freeTiles = [];
+      
+      for (let tile of tiles) {
+        if (tile.classList.contains("matched")) continue;
+        
+        const x = parseInt(tile.dataset.x);
+        const y = parseInt(tile.dataset.y);
+        const z = parseInt(tile.dataset.z);
+        
+        // Check if there's a tile above this one
+        let hasTileAbove = false;
+        for (let otherTile of tiles) {
+          if (otherTile.classList.contains("matched")) continue;
+          
+          const otherX = parseInt(otherTile.dataset.x);
+          const otherY = parseInt(otherTile.dataset.y);
+          const otherZ = parseInt(otherTile.dataset.z);
+          
+          // A tile is above if it's in a higher layer and overlaps in position
+          if (otherZ > z && Math.abs(otherX - x) < 60 && Math.abs(otherY - y) < 80) {
+            hasTileAbove = true;
+            break;
+          }
+        }
+        
+        // Check if the tile is at the edge (free on at least one side)
+        if (!hasTileAbove) {
+          freeTiles.push(tile);
+          tile.classList.remove("blocked");
+        }
+      }
+    }
+
+    function handleTileClick(tile) {
+      if (lock || tile.classList.contains("matched") || tile.classList.contains("blocked")) return;
+      
+      playSound("select");
+      
+      // Add selection effect
+      tile.classList.add("selected");
+      
+      if (!firstTile) {
+        firstTile = tile;
+        
+        // Add pulsing animation to selected tile
+        tile.style.animation = "pulse 1s infinite";
+      } else {
+        lock = true;
+        moveCount++;
+        updateStats();
+        
+        if (tile.dataset.symbol === firstTile.dataset.symbol && tile !== firstTile) {
+          // Match found
+          playSound("match");
+          
+          setTimeout(() => {
+            // Remove both tiles
+            tile.classList.add("matched");
+            firstTile.classList.add("matched");
+            
+            // Reset selection
+            firstTile.classList.remove("selected");
+            firstTile.style.animation = "";
+            firstTile = null;
+            lock = false;
+            
+            matchedPairs++;
+            updateStats();
+            
+            // Update which tiles are now selectable
+            updateSelectableTiles();
+            
+            if (matchedPairs === totalPairs) {
+              // Game completed
+              setTimeout(() => gameComplete(), 800);
+            }
+          }, 500);
+        } else {
+          // No match
+          setTimeout(() => {
+            tile.classList.remove("selected");
+            firstTile.classList.remove("selected");
+            firstTile.style.animation = "";
+            firstTile = null;
+            lock = false;
+          }, 800);
+        }
+      }
+    }
+
+    function updateStats() {
+      document.getElementById("matchedCount").textContent = matchedPairs;
+      document.getElementById("moveCount").textContent = moveCount;
+    }
+
+    function updateTimer() {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+      document.getElementById("timer").textContent = 
+        `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+    }
+
+    function gameComplete() {
+      clearInterval(gameTimer);
+      playSound("win");
+      
+      document.getElementById("finalTime").textContent = 
+        document.getElementById("timer").textContent;
+      document.getElementById("finalMoves").textContent = moveCount;
+      
+      // Show completion screen
+      document.getElementById("gameComplete").classList.add("show");
+      
+      // Create confetti effect
+      createConfetti();
+    }
+
+    function createConfetti() {
+      const colors = ['#ffd700', '#5c4fc7', '#ff6b6b', '#4ecdc4', '#ffbe0b'];
+      const container = document.getElementById("gameComplete");
+      
+      for (let i = 0; i < 100; i++) {
+        const confetti = document.createElement("div");
+        confetti.className = "confetti";
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.top = '-10px';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+        container.appendChild(confetti);
+        
+        // Animate confetti
+        const animation = confetti.animate([
+          { top: '-10px', transform: `rotate(0deg)` },
+          { top: '100vh', transform: `rotate(${Math.random() * 720}deg)` }
+        ], {
+          duration: Math.random() * 3000 + 2000,
+          easing: 'cubic-bezier(0.1, 0.8, 0.3, 1)'
+        });
+        
+        animation.onfinish = () => {
+          confetti.remove();
+        };
+      }
+    }
+
+    function playSound(type) {
+      const sound = document.getElementById(`${type}Sound`);
+      if (sound) {
+        sound.currentTime = 0;
+        sound.play().catch(e => console.log("Audio play failed:", e));
+      }
+    }
+
+    function shuffleTiles() {
+      if (lock) return;
+      
+      playSound("shuffle");
+      
+      // Get all unmatched tiles
+      const unmatchedTiles = tiles.filter(tile => !tile.classList.contains("matched"));
+      const symbols = unmatchedTiles.map(tile => tile.dataset.symbol);
+      
+      // Shuffle symbols
+      for (let i = symbols.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [symbols[i], symbols[j]] = [symbols[j], symbols[i]];
+      }
+      
+      // Apply shuffled symbols
+      for (let i = 0; i < unmatchedTiles.length; i++) {
+        unmatchedTiles[i].textContent = symbols[i];
+        unmatchedTiles[i].dataset.symbol = symbols[i];
+      }
+      
+      // Reset selection
+      if (firstTile) {
+        firstTile.classList.remove("selected");
+        firstTile.style.animation = "";
+        firstTile = null;
+      }
+    }
+
+    function showHint() {
+      if (lock) return;
+      
+      // Find all free tiles
+      const freeTiles = tiles.filter(tile => 
+        !tile.classList.contains("matched") && 
+        !tile.classList.contains("blocked")
+      );
+      
+      // Find a matching pair
+      let foundPair = null;
+      
+      for (let i = 0; i < freeTiles.length && !foundPair; i++) {
+        const first = freeTiles[i];
+        
+        for (let j = i + 1; j < freeTiles.length && !foundPair; j++) {
+          const second = freeTiles[j];
+          
+          if (first.dataset.symbol === second.dataset.symbol) {
+            foundPair = [first, second];
+          }
+        }
+      }
+      
+      if (foundPair) {
+        // Highlight the matching tiles
+        foundPair[0].style.boxShadow = "0 0 15px #ffd700, inset 0 0 10px #ffd700";
+        foundPair[1].style.boxShadow = "0 0 15px #ffd700, inset 0 0 10px #ffd700";
+        
+        setTimeout(() => {
+          foundPair[0].style.boxShadow = "";
+          foundPair[1].style.boxShadow = "";
+        }, 2000);
+      } else {
+        alert("No matches found! You may need to shuffle or restart the game.");
+      }
+    }
+
+    // Restart button
+    document.getElementById("restartBtn").addEventListener("click", () => initGame(currentLayout));
+    
+    // Play again button
+    document.getElementById("playAgainBtn").addEventListener("click", () => {
+      document.getElementById("gameComplete").classList.remove("show");
+      initGame(currentLayout);
+    });
+    
+    // Hint button
+    document.getElementById("hintBtn").addEventListener("click", showHint);
+    
+    // Shuffle button
+    document.getElementById("shuffleBtn").addEventListener("click", shuffleTiles);
+    
+    // Layout buttons
+    document.querySelectorAll(".layout-btn").forEach(button => {
+      button.addEventListener("click", () => {
+        const layoutType = button.dataset.layout;
+        initGame(layoutType);
+      });
+    });
+
+    // ---------------- Music Control ----------------
+    function fadeAudio(audio, from, to, duration=600) {
+      const stepTime = 50, steps = Math.round(duration/stepTime);
+      let currentStep = 0;
+      const delta = (to - from) / steps;
+      audio.volume = from;
       clearInterval(audio._fadeInterval);
-      audio.volume = to;
-      if (to === 0) { audio.pause(); audio.currentTime = 0; }
+      audio._fadeInterval = setInterval(() => {
+        currentStep++;
+        audio.volume = Math.min(1, Math.max(0, audio.volume + delta));
+        if (currentStep >= steps) {
+          clearInterval(audio._fadeInterval);
+          audio.volume = to;
+          if (to === 0) { audio.pause(); audio.currentTime = 0; }
+        }
+      }, stepTime);
     }
-  }, stepTime);
-}
 
-const musicBtn = document.getElementById("musicToggleBtn");
-const bgMusic = document.getElementById("bgMusic");
-let musicOn = false;
-bgMusic.volume = 0.35;
+    const musicBtn = document.getElementById("musicToggleBtn");
+    const bgMusic = document.getElementById("bgMusic");
+    let musicOn = false;
+    bgMusic.volume = 0.35;
 
-musicBtn.addEventListener("click", async () => {
-  if (!musicOn) {
-    try {
-      bgMusic.currentTime = 0;
-      bgMusic.volume = 0;
-      await bgMusic.play();
-      fadeAudio(bgMusic, 0, 0.35, 600);
-      musicBtn.textContent = "🎵 Music On";
-      musicOn = true;
-    } catch {}
-  } else {
-    fadeAudio(bgMusic, bgMusic.volume, 0, 600);
-    musicBtn.textContent = "🔇 Music Off";
-    musicOn = false;
-  }
-});
-</script>
+    musicBtn.addEventListener("click", async () => {
+      if (!musicOn) {
+        try {
+          bgMusic.currentTime = 0;
+          bgMusic.volume = 0;
+          await bgMusic.play();
+          fadeAudio(bgMusic, 0, 0.35, 600);
+          musicBtn.innerHTML = '<i class="fas fa-volume-up"></i> Music On';
+          musicOn = true;
+        } catch {}
+      } else {
+        fadeAudio(bgMusic, bgMusic.volume, 0, 600);
+        musicBtn.innerHTML = '<i class="fas fa-volume-mute"></i> Music Off';
+        musicOn = false;
+      }
+    });
+  </script>
 </body>
 </html>
