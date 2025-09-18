@@ -235,8 +235,8 @@
       border: 1px solid rgba(92, 79, 199, 0.3);
     }
     
-    /* Layout selection */
-    .layout-selection {
+    /* Difficulty selection */
+    .difficulty-selection {
       display: flex;
       justify-content: center;
       gap: 10px;
@@ -244,7 +244,7 @@
       flex-wrap: wrap;
     }
     
-    .layout-btn {
+    .difficulty-btn {
       padding: 0.5rem 1rem;
       font-size: 0.9rem;
     }
@@ -280,11 +280,11 @@
         gap: 10px;
       }
       
-      .layout-selection {
+      .difficulty-selection {
         gap: 5px;
       }
       
-      .layout-btn {
+      .difficulty-btn {
         padding: 0.4rem 0.8rem;
         font-size: 0.8rem;
       }
@@ -364,13 +364,21 @@
       100% { box-shadow: 0 0 5px #ffd700; }
     }
     
-    /* Layout preview */
-    .layout-preview {
+    /* Difficulty indicator */
+    .difficulty-indicator {
       margin-top: 10px;
       text-align: center;
       font-size: 1.2rem;
       color: var(--text-gold);
       min-height: 30px;
+    }
+    
+    /* Tile sets */
+    .tile-set-info {
+      text-align: center;
+      margin-top: 5px;
+      font-size: 1rem;
+      color: #a0a0d0;
     }
   </style>
 </head>
@@ -392,15 +400,14 @@
         <button id="shuffleBtn"><i class="fas fa-random"></i> Shuffle</button>
       </div>
       
-      <div class="layout-selection">
-        <button class="layout-btn" data-layout="pyramid">Pyramid</button>
-        <button class="layout-btn" data-layout="rectangle">Rectangle</button>
-        <button class="layout-btn" data-layout="circle">Circle</button>
-        <button class="layout-btn" data-layout="guitar">Guitar</button>
-        <button class="layout-btn" data-layout="random">Random</button>
+      <div class="difficulty-selection">
+        <button class="difficulty-btn" data-difficulty="easy">Easy</button>
+        <button class="difficulty-btn" data-difficulty="medium">Medium</button>
+        <button class="difficulty-btn" data-difficulty="hard">Hard</button>
       </div>
       
-      <div class="layout-preview" id="layoutName">Current Layout: Pyramid</div>
+      <div class="difficulty-indicator" id="difficultyName">Difficulty: Medium</div>
+      <div class="tile-set-info" id="tileSetInfo">Tile Set: Mahjong</div>
       
       <div class="game-board">
         <div class="board-layout" id="gameBoard"></div>
@@ -515,7 +522,10 @@
     }
 
     // ---------------- Mahjong Game ----------------
-    const symbols = ["🐉", "🀄", "🍵", "🎋", "🌸", "💮", "🧧", "🎎", "🐼", "🎍", "🏮", "🎏", "🌊", "🎴", "🪷", "🌺"];
+    const mahjongSymbols = ["🀇", "🀈", "🀉", "🀊", "🀋", "🀌", "🀍", "🀎", "🀏", "🀀", "🀁", "🀂", "🀃", "🀄", "🀅", "🀆"];
+    const animalSymbols = ["🐼", "🐯", "🐰", "🐨", "🐵", "🐶", "🐷", "🐸", "🐙", "🦊", "🦁", "🐮", "🐻", "🐔", "🐦", "🐤"];
+    const insectSymbols = ["🐝", "🐛", "🦋", "🐌", "🐞", "🐜", "🦟", "🦗", "🕷", "🦂", "🐢", "🐍", "🦎", "🐙", "🦑", "🦐"];
+    
     let firstTile = null;
     let lock = false;
     let matchedPairs = 0;
@@ -525,7 +535,8 @@
     let seconds = 0;
     let tiles = [];
     let layout = [];
-    let currentLayout = "pyramid";
+    let currentDifficulty = "medium";
+    let currentTileSet = "mahjong";
 
     // Layout generators
     const layoutGenerators = {
@@ -650,9 +661,20 @@
       }
     };
 
-    function initGame(layoutType = currentLayout) {
-      currentLayout = layoutType;
-      document.getElementById("layoutName").textContent = `Current Layout: ${layoutType.charAt(0).toUpperCase() + layoutType.slice(1)}`;
+    function initGame(difficulty = currentDifficulty) {
+      currentDifficulty = difficulty;
+      
+      // Set tile set based on difficulty
+      if (difficulty === "easy") {
+        currentTileSet = "mahjong";
+      } else if (difficulty === "medium") {
+        currentTileSet = "animals";
+      } else {
+        currentTileSet = "insects";
+      }
+      
+      document.getElementById("difficultyName").textContent = `Difficulty: ${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}`;
+      document.getElementById("tileSetInfo").textContent = `Tile Set: ${currentTileSet.charAt(0).toUpperCase() + currentTileSet.slice(1)}`;
       
       // Reset game state
       clearInterval(gameTimer);
@@ -666,11 +688,24 @@
       tiles = [];
       
       // Generate layout positions
-      const layoutPositions = layoutGenerators[layoutType]();
+      const layoutPositions = layoutGenerators.random();
+      
+      // Select symbols based on tile set
+      let symbolSet;
+      switch(currentTileSet) {
+        case "animals":
+          symbolSet = animalSymbols;
+          break;
+        case "insects":
+          symbolSet = insectSymbols;
+          break;
+        default:
+          symbolSet = mahjongSymbols;
+      }
       
       // Create a full set of tiles (each symbol appears twice)
       let deck = [];
-      const selectedSymbols = [...symbols].sort(() => Math.random() - 0.5).slice(0, Math.ceil(layoutPositions.length / 2));
+      const selectedSymbols = [...symbolSet].sort(() => Math.random() - 0.5).slice(0, Math.ceil(layoutPositions.length / 2));
       
       for (let symbol of selectedSymbols) {
         // Add pairs until we have enough tiles
@@ -977,12 +1012,12 @@
     }
 
     // Restart button
-    document.getElementById("restartBtn").addEventListener("click", () => initGame(currentLayout));
+    document.getElementById("restartBtn").addEventListener("click", () => initGame(currentDifficulty));
     
     // Play again button
     document.getElementById("playAgainBtn").addEventListener("click", () => {
       document.getElementById("gameComplete").classList.remove("show");
-      initGame(currentLayout);
+      initGame(currentDifficulty);
     });
     
     // Hint button
@@ -991,11 +1026,11 @@
     // Shuffle button
     document.getElementById("shuffleBtn").addEventListener("click", shuffleTiles);
     
-    // Layout buttons
-    document.querySelectorAll(".layout-btn").forEach(button => {
+    // Difficulty buttons
+    document.querySelectorAll(".difficulty-btn").forEach(button => {
       button.addEventListener("click", () => {
-        const layoutType = button.dataset.layout;
-        initGame(layoutType);
+        const difficulty = button.dataset.difficulty;
+        initGame(difficulty);
       });
     });
 
