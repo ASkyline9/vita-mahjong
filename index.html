@@ -121,11 +121,16 @@
     
     /* Layout for mahjong solitaire */
     .board-layout {
-      position: relative;
-      width: 100%;
-      height: 450px;
-      margin: 0 auto;
-    }
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  justify-items: center;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
     
     /* Decorative elements */
     .chinese-pattern {
